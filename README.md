@@ -1,2 +1,2 @@
 # QtGraphs
-Qt Graph Editor
+An undirected graph editor made in Qt (C++) that allows saving and loading from a text file.
