@@ -1,6 +1,6 @@
 #include "edgemodel.h"
 
-EdgeModel::EdgeModel(Graph* graph) : graph(graph)
+EdgeModel::EdgeModel(Graph* graph) : QAbstractTableModel(graph), graph(graph)
 {
     connect(graph, SIGNAL(newEdge(int)), this, SLOT(addEdge(int)));
     connect(graph, SIGNAL(edgeRemoved(int)), this, SLOT(removeEdge(int)));

@@ -97,50 +97,101 @@
   </widget>
   <action name="actionOpen">
    <property name="text">
-    <string>Open</string>
+    <string>Open (Ctrl+O)</string>
    </property>
    <property name="toolTip">
-    <string>Open graph file</string>
+    <string>Load graph from file</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
    </property>
   </action>
   <action name="actionSave">
    <property name="text">
-    <string>Save</string>
+    <string>Save (Ctrl+S)</string>
+   </property>
+   <property name="toolTip">
+    <string>Save graph to file</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
    </property>
   </action>
   <action name="actionExit">
    <property name="text">
-    <string>Exit</string>
+    <string>Exit (Ctrl+Q)</string>
+   </property>
+   <property name="toolTip">
+    <string>Exit editor</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
    </property>
   </action>
   <action name="actionNew">
    <property name="text">
-    <string>New</string>
+    <string>New (Ctrl+N)</string>
+   </property>
+   <property name="toolTip">
+    <string>New graph</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
    </property>
   </action>
   <action name="actionAdd_node">
    <property name="text">
+    <string>Add node (N)</string>
+   </property>
+   <property name="toolTip">
     <string>Add node</string>
+   </property>
+   <property name="shortcut">
+    <string>N</string>
    </property>
   </action>
   <action name="actionAdd_edge">
    <property name="text">
+    <string>Add edge (E)</string>
+   </property>
+   <property name="toolTip">
     <string>Add edge</string>
+   </property>
+   <property name="shortcut">
+    <string>E</string>
    </property>
   </action>
   <action name="actionRemove_item">
    <property name="text">
-    <string>Remove item</string>
+    <string>Remove item (Del)</string>
+   </property>
+   <property name="toolTip">
+    <string>Remove selected item</string>
+   </property>
+   <property name="shortcut">
+    <string>Del</string>
    </property>
   </action>
   <action name="actionMove">
    <property name="text">
-    <string>Move</string>
+    <string>Move (M)</string>
+   </property>
+   <property name="toolTip">
+    <string>Move items or view</string>
+   </property>
+   <property name="shortcut">
+    <string>M</string>
    </property>
   </action>
   <action name="actionSelect">
    <property name="text">
-    <string>Select</string>
+    <string>Select (S)</string>
+   </property>
+   <property name="toolTip">
+    <string>Select items</string>
+   </property>
+   <property name="shortcut">
+    <string>S</string>
    </property>
   </action>
  </widget>

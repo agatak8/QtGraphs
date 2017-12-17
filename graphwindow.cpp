@@ -49,14 +49,14 @@ GraphWindow::~GraphWindow()
 void GraphWindow::addNode()
 {
     graphView->setDragMode(QGraphicsView::DragMode::NoDrag);
-    graphView->setCursor(Qt::CrossCursor);
+    graphView->setCursor(Qt::UpArrowCursor);
     graph->setMode(Graph::Mode::AddNode);
 }
 
 void GraphWindow::addEdge()
 {
     graphView->setDragMode(QGraphicsView::DragMode::NoDrag);
-    graphView->setCursor(Qt::SizeFDiagCursor);
+    graphView->setCursor(Qt::SizeVerCursor);
     graph->setMode(Graph::Mode::AddEdge);
 }
 

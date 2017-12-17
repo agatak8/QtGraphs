@@ -1,6 +1,6 @@
 #include "nodemodel.h"
 
-NodeModel::NodeModel(Graph* graph) : graph(graph)
+NodeModel::NodeModel(Graph* graph) : QAbstractTableModel(graph), graph(graph)
 {
     connect(graph, SIGNAL(newNode(int)), this, SLOT(addNode(int)));
     connect(graph, SIGNAL(nodeRemoved(int)), this, SLOT(removeNode(int)));
