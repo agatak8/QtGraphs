@@ -14,13 +14,11 @@ public:
 
 protected:
     void wheelEvent(QWheelEvent *event) override;
+    void resizeEvent(QResizeEvent *event) override;
 
 private:
     Graph *g;
-
-    // QWidget interface
-protected:
-    void resizeEvent(QResizeEvent *event) override;
+    qreal s = 1.0;
 };
 
 #endif // GRAPHVIEW_H

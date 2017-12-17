@@ -176,7 +176,7 @@ void Graph::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
                         break;
                     }
                 }
-                break;
+                return;
             default:
                 break;
         }
