@@ -8,6 +8,7 @@
 #include <QMap>
 #include <QList>
 #include <QObject>
+#include <QRubberBand>
 
 class Node : public QObject, public QGraphicsEllipseItem
 {
@@ -51,7 +52,7 @@ class Graph : public QGraphicsScene
 {
     Q_OBJECT
 public:
-    enum Mode {Move, AddNode, AddEdge, Remove};
+    enum Mode {Select, Move, AddNode, AddEdge, Remove};
     Graph(QObject* parent = 0);
     void clear();
     void loadFromFile(QString fileName);
@@ -63,6 +64,8 @@ public:
     const QList<Node*>& nodes() const;
     const QList<Node::Edge*>& edges() const;
     void setMode(Mode mode);
+    Mode getMode() const;
+    void removeSelected();
 
 
 signals:
@@ -82,6 +85,7 @@ private:
     QList<Node*> nodesList;
     QList<Node::Edge*> edgesList;
     QGraphicsLineItem *line;
+    Node* startNode;
 
     // QGraphicsScene interface
 };

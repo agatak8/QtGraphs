@@ -4,7 +4,7 @@
 #include <fstream>
 #include <iostream>
 
-Graph::Graph(QObject *parent) : QGraphicsScene(parent)
+Graph::Graph(QObject *parent) : QGraphicsScene(parent), line(Q_NULLPTR), startNode(Q_NULLPTR)
 {
     setBackgroundBrush(Qt::white);
 }
@@ -21,7 +21,7 @@ Node* Graph::addNode(QPointF point)
 
 Node::Edge* Graph::addEdge(Node* n1, Node* n2)
 {
-    if(n1->hasEdge(n2)) return Q_NULLPTR;
+    if(n1->hasEdge(n2) || n1 == n2) return Q_NULLPTR;
     Node::Edge* edge = (n1->getNumber() <= n2->getNumber()) ? new Node::Edge(n1, n2) : new Node::Edge(n2, n1);
     edgesList << edge;
     addItem(edge);
@@ -68,6 +68,11 @@ const QList<Node::Edge *> &Graph::edges() const
 void Graph::setMode(Graph::Mode mode)
 {
     this->mode = mode;
+}
+
+Graph::Mode Graph::getMode() const
+{
+    return mode;
 }
 
 void Graph::clear()
@@ -127,39 +132,54 @@ void Graph::saveToFile(QString fileName)
     }
 }
 
+void Graph::removeSelected()
+{
+    // delete edges first to ensure integrity
+    // if we first deleted nodes we might delete a node that has edges selected
+    foreach (QGraphicsItem* item, selectedItems())
+    {
+        if(item->type() == Node::Edge::Type)
+        {
+            Node::Edge* edge = qgraphicsitem_cast<Node::Edge *>(item);
+            removeEdge(edge);
+        }
+    }
+    foreach (QGraphicsItem* item, selectedItems())
+    {
+        if(item->type() == Node::Type)
+        {
+            Node* node = qgraphicsitem_cast<Node *>(item);
+            removeNode(node);
+        }
+    }
+}
+
+
 void Graph::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
-    if (mouseEvent->button() != Qt::LeftButton)
-        return;
-
-    switch (mode) {
-        case AddNode:
-            addNode(QPointF(mouseEvent->scenePos()));
-            break;
-        case AddEdge:
-            line = new QGraphicsLineItem(QLineF(mouseEvent->scenePos(),
-                                        mouseEvent->scenePos()));
-            line->setPen(QPen(Qt::black, 2));
-            addItem(line);
-            break;
-        case Remove:
-            foreach (QGraphicsItem* item, items(mouseEvent->scenePos()))
-            {
-                if(item->type() == Node::Type)
+    if (mouseEvent->button() == Qt::LeftButton)
+    {
+        switch (mode) {
+            case AddNode:
+                addNode(QPointF(mouseEvent->scenePos()));
+                break;
+            case AddEdge:
+                foreach(QGraphicsItem* item, items(mouseEvent->scenePos()))
                 {
-                    Node* node = qgraphicsitem_cast<Node *>(item);
-                    removeNode(node);
-                    break;
+                    if(item->type() == Node::Type)
+                    {
+                        line = new QGraphicsLineItem(QLineF(mouseEvent->scenePos(),
+                                                    mouseEvent->scenePos()));
+                        line->setPen(QPen(Qt::black, 2));
+                        addItem(line);
+                        startNode = qgraphicsitem_cast<Node*>(item);
+                        break;
+                    }
                 }
-                else if(item->type() == Node::Edge::Type)
-                {
-                    Node::Edge* edge = qgraphicsitem_cast<Node::Edge *>(item);
-                    removeEdge(edge);
-                }
-            }
-            break;
-        default:
-            break;
+                break;
+            default:
+                break;
+        }
     }
     QGraphicsScene::mousePressEvent(mouseEvent);
 }
@@ -167,37 +187,29 @@ void Graph::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
 void Graph::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
     if (mode == AddEdge && line != Q_NULLPTR) {
-        QLineF newLine(line->line().p1(), mouseEvent->scenePos());
+        QLineF newLine(startNode->pos(), mouseEvent->scenePos());
         line->setLine(newLine);
-    } else if (mode == Move) {
+    } else {
         QGraphicsScene::mouseMoveEvent(mouseEvent);
     }
 }
 
 void Graph::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
-    if (line != Q_NULLPTR && mode == AddEdge) {
-        QList<QGraphicsItem *> startItems = items(line->line().p1());
-        if (startItems.count() && startItems.first() == line)
-            startItems.removeFirst();
-        QList<QGraphicsItem *> endItems = items(line->line().p2());
-        if (endItems.count() && endItems.first() == line)
-            endItems.removeFirst();
-
-        removeItem(line);
-        delete line;
-
-        if (startItems.count() > 0 && endItems.count() > 0 &&
-            startItems.first()->type() == Node::Type &&
-            endItems.first()->type() == Node::Type &&
-            startItems.first() != endItems.first())
+    if (startNode != Q_NULLPTR && line != Q_NULLPTR && mode == AddEdge) {
+        foreach(QGraphicsItem* item, items(line->line().p2()))
         {
-            Node *startItem = qgraphicsitem_cast<Node *>(startItems.first());
-            Node *endItem = qgraphicsitem_cast<Node *>(endItems.first());
-            addEdge(startItem, endItem);
+            if(item->type() == Node::Type)
+            {
+                addEdge(startNode, qgraphicsitem_cast<Node*>(item));
+                break;
+            }
         }
+        removeItem(line);
+        delete(line);
     }
     line = Q_NULLPTR;
+    startNode = Q_NULLPTR;
     QGraphicsScene::mouseReleaseEvent(mouseEvent);
 }
 
@@ -229,7 +241,7 @@ void Node::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWid
 {
     QGraphicsEllipseItem::paint(painter, option, widget);
     painter->setPen(QPen(Qt::white));
-    painter->drawText(-2, 4, QString("%1").arg(number));
+    painter->drawText(QRectF(-16, -16, 32, 32), Qt::AlignVCenter | Qt::AlignHCenter, QString("%1").arg(number));
 }
 
 void Node::addEdge(Edge *edge)

@@ -3,6 +3,7 @@
 #include "graph.h"
 #include "nodemodel.h"
 #include "edgemodel.h"
+#include "graphview.h"
 
 #include <QDir>
 #include <QFileDialog>
@@ -19,6 +20,7 @@ GraphWindow::GraphWindow(QWidget *parent) :
     connect(ui->actionAdd_edge, SIGNAL(triggered()), this, SLOT(addEdge()));
     connect(ui->actionRemove_item, SIGNAL(triggered()), this, SLOT(remove()));
     connect(ui->actionMove, SIGNAL(triggered()), this, SLOT(move()));
+    connect(ui->actionSelect, SIGNAL(triggered()), this, SLOT(select()));
     connect(ui->actionOpen, SIGNAL(triggered()), this, SLOT(open()));
     connect(ui->actionSave, SIGNAL(triggered()), this, SLOT(save()));
     connect(ui->actionNew, SIGNAL(triggered()), this, SLOT(newGraph()));
@@ -32,7 +34,10 @@ GraphWindow::GraphWindow(QWidget *parent) :
     ui->edgesView->setModel(edgeModel);
     ui->edgesView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
-    ui->graphView->setScene(graph);
+    graphView = new GraphView(graph);
+    QGridLayout* gl = qobject_cast<QGridLayout*>(ui->centralWidget->layout());
+    gl->addWidget(graphView, 1, 0, 3, 1);
+    move();
 
 }
 
@@ -43,22 +48,33 @@ GraphWindow::~GraphWindow()
 
 void GraphWindow::addNode()
 {
+    graphView->setDragMode(QGraphicsView::DragMode::NoDrag);
+    graphView->setCursor(Qt::CrossCursor);
     graph->setMode(Graph::Mode::AddNode);
 }
 
 void GraphWindow::addEdge()
 {
+    graphView->setDragMode(QGraphicsView::DragMode::NoDrag);
+    graphView->setCursor(Qt::SizeFDiagCursor);
     graph->setMode(Graph::Mode::AddEdge);
 }
 
 void GraphWindow::remove()
 {
-    graph->setMode(Graph::Mode::Remove);
+    graph->removeSelected();
 }
 
 void GraphWindow::move()
 {
+    graphView->setDragMode(QGraphicsView::DragMode::ScrollHandDrag);
     graph->setMode(Graph::Mode::Move);
+}
+
+void GraphWindow::select()
+{
+    graphView->setDragMode(QGraphicsView::DragMode::RubberBandDrag);
+    graph->setMode(Graph::Mode::Select);
 }
 
 void GraphWindow::open()
@@ -68,7 +84,8 @@ void GraphWindow::open()
     if(fileName != QString())
     {
         graph->loadFromFile(fileName);
-        ui->graphView->ensureVisible(graph->itemsBoundingRect());
+        //graphView->ensureVisible(graph->itemsBoundingRect());
+        graphView->fitInView(graph->itemsBoundingRect(), Qt::KeepAspectRatio);
     }
 }
 
@@ -83,4 +100,5 @@ void GraphWindow::save()
 void GraphWindow::newGraph()
 {
     graph->clear();
+    graphView->resetScale();
 }

@@ -28,13 +28,15 @@ SOURCES += \
         graphwindow.cpp \
     graph.cpp \
     nodemodel.cpp \
-    edgemodel.cpp
+    edgemodel.cpp \
+    graphview.cpp
 
 HEADERS += \
         graphwindow.h \
     graph.h \
     nodemodel.h \
-    edgemodel.h
+    edgemodel.h \
+    graphview.h
 
 FORMS += \
         graphwindow.ui

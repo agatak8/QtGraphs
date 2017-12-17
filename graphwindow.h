@@ -4,6 +4,7 @@
 #include <QMainWindow>
 
 #include "graph.h"
+#include "graphview.h"
 
 namespace Ui {
 class GraphWindow;
@@ -20,6 +21,7 @@ private slots:
     void addNode();
     void addEdge();
     void remove();
+    void select();
     void move();
     void open();
     void save();
@@ -28,6 +30,7 @@ private slots:
 private:
     Ui::GraphWindow *ui;
     Graph* graph;
+    GraphView* graphView;
 
     void populateGraph();
 };
